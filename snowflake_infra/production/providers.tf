@@ -20,7 +20,7 @@ provider "snowflake" {
   preview_features_enabled = [
     "snowflake_storage_integration_aws_resource",
     "snowflake_stage_external_s3_resource",
-    "snowflake_file_format_resource",
+    "snowflake_file_format_json_resource",
     "snowflake_table_resource",
     "snowflake_external_table_resource"
   ]
