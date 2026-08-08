@@ -17,10 +17,10 @@ resource "snowflake_grant_privileges_to_account_role" "airflow_dev_database" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "airflow_dev_bronze" {
-  privileges        = ["USAGE"]
+  privileges        = ["USAGE", "CREATE TABLE"]
   account_role_name = snowflake_account_role.airflow_dev_role.name
   on_schema {
-    schema_name = snowflake_schema.bronze_dev.fully_qualified_name
+    schema_name = snowflake_schema.bronze.fully_qualified_name
   }
 }
 

@@ -20,14 +20,14 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_dev_bronze" {
   privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.dbt_dev_role.name
   on_schema {
-    schema_name = snowflake_schema.bronze_dev.fully_qualified_name
+    schema_name = snowflake_schema.bronze.fully_qualified_name
   }
 }
 
 resource "snowflake_grant_privileges_to_account_role" "dbt_dev_silver" {
   account_role_name = snowflake_account_role.dbt_dev_role.name
   on_schema {
-    schema_name = snowflake_schema.silver_dev.fully_qualified_name
+    schema_name = snowflake_schema.silver.fully_qualified_name
   }
   all_privileges = true
   always_apply   = true
@@ -36,7 +36,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_dev_silver" {
 resource "snowflake_grant_privileges_to_account_role" "dbt_dev_gold" {
   account_role_name = snowflake_account_role.dbt_dev_role.name
   on_schema {
-    schema_name = snowflake_schema.gold_dev.fully_qualified_name
+    schema_name = snowflake_schema.gold.fully_qualified_name
   }
   all_privileges = true
   always_apply   = true
@@ -48,7 +48,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_bronze_dev_tables" {
   on_schema_object {
     all {
       object_type_plural = "TABLES"
-      in_schema          = snowflake_schema.bronze_dev.fully_qualified_name
+      in_schema          = snowflake_schema.bronze.fully_qualified_name
     }
   }
 }
@@ -59,7 +59,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_bronze_dev_future_tab
   on_schema_object {
     future {
       object_type_plural = "TABLES"
-      in_schema          = snowflake_schema.bronze_dev.fully_qualified_name
+      in_schema          = snowflake_schema.bronze.fully_qualified_name
     }
   }
 }
@@ -70,7 +70,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_bronze_dev_external_t
   on_schema_object {
     all {
       object_type_plural = "EXTERNAL TABLES"
-      in_schema          = snowflake_schema.bronze_dev.fully_qualified_name
+      in_schema          = snowflake_schema.bronze.fully_qualified_name
     }
   }
 }
@@ -82,7 +82,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_bronze_dev_external_f
   on_schema_object {
     future {
       object_type_plural = "EXTERNAL TABLES"
-      in_schema          = snowflake_schema.bronze_dev.fully_qualified_name
+      in_schema          = snowflake_schema.bronze.fully_qualified_name
     }
   }
 }
