@@ -1,0 +1,31 @@
+name: Terraform CI pipeline
+
+on:
+  pull_request:
+    paths:
+      - "snowflake_infra/**"
+
+jobs:
+  tf_ci:
+    name: Terraform CI
+    runs-on: ubuntu-24.04
+
+    strategy:
+      matrix:
+        environment:
+          - production
+          - staging
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Terraform fmt
+        uses: dflook/terraform-fmt-check@v1
+        with:
+          path: ./snowflake_infra/${{ matrix.environment }}
+
+      - name: Terraform validate
+        uses: dflook/terraform-validate@v2
+        with:
+          path: ./snowflake_infra/${{ matrix.environment }}
