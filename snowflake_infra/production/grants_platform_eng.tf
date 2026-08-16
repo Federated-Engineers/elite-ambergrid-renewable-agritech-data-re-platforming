@@ -3,7 +3,7 @@ resource "snowflake_grant_privileges_to_account_role" "platform_eng_prod_warehou
   account_role_name = snowflake_account_role.platform_eng_prod_role.name
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = module.etl_wh.name
+    object_name = module.service_compute.name
   }
 }
 

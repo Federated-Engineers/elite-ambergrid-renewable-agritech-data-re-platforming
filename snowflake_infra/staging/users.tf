@@ -1,22 +1,22 @@
 module "dbt_user" {
   source     = "../modules/user"
-  name       = "AG_DBT_DEV_USR"
-  login_name = "AG_DBT_DEV_USR"
+  name       = "AMBERGRID_DBT_CORE_USR"
+  login_name = "AMBERGRID_DBT_CORE_USR"
   password   = data.aws_ssm_parameter.ambergrid_snowflake_password.value
   comment    = "Service user for dbt transformations in the dev environment"
 
-  default_warehouse = module.ag_dev_wh.name
+  default_warehouse = module.service_compute.name
   default_role      = snowflake_account_role.dbt_dev_role.name
 }
 
 module "airflow_user" {
   source     = "../modules/user"
-  name       = "AG_AIRFLOW_DEV_USR"
-  login_name = "AG_AIRFLOW_DEV_USR"
+  name       = "AMBERGRID_AIRFLOW_DEV_USR"
+  login_name = "AMBERGRID_AIRFLOW_DEV_USR"
   password   = data.aws_ssm_parameter.ambergrid_snowflake_password.value
   comment    = "Service user for airflow ingestion in the dev environment"
 
-  default_warehouse = module.ag_dev_wh.name
+  default_warehouse = module.service_compute.name
   default_role      = snowflake_account_role.airflow_dev_role.name
 }
 
