@@ -17,8 +17,6 @@ clean-targets:
 
 models:
   ambergrid_dbt:
-    example:
-      +materialized: view
     staging:
       +schema: silver
       +materialized: view

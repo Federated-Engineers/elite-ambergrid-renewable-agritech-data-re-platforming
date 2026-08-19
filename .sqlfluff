@@ -1,0 +1,35 @@
+[sqlfluff]
+dialect = snowflake
+templater = jinja
+max_line_length = 120
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = true
+
+# Keywords and built-in functions written in lowercase
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+# Column/table names and data types in lowercase for consistency
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.types]
+extended_capitalisation_policy = lower
+
+# Trailing commas
+[sqlfluff:layout:type:comma]
+line_position = trailing
+
+# Require explicit AS keyword for aliases
+[sqlfluff:rules:aliasing.table]
+aliasing = explicit
+
+[sqlfluff:rules:aliasing.column]
+aliasing = explicit
