@@ -33,3 +33,8 @@ aliasing = explicit
 
 [sqlfluff:rules:aliasing.column]
 aliasing = explicit
+
+# Named columns in GROUP BY and ORDER BY, never positional numbers.
+# Default is 'consistent', which would allow "group by 1, 2".
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = explicit
