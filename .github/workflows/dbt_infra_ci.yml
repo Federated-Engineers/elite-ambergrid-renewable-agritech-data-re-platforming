@@ -1,0 +1,25 @@
+name: DBT Infrastructure CI
+
+on:
+  pull_request:
+    paths:
+      - "dbt_cloud_infra/**"
+
+jobs:
+  tf_ci:
+    name: DBT Infra CI
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: terraform fmt
+        uses: dflook/terraform-fmt-check@v1
+        with:
+          path: ./dbt_cloud_infra
+
+      - name: terraform validate
+        uses: dflook/terraform-validate@v2
+        with:
+          path: ./dbt_cloud_infra
