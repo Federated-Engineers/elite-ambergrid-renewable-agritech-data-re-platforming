@@ -8,7 +8,7 @@ resource "snowflake_grant_privileges_to_account_role" "dbt_prod_warehouse" {
 }
 
 resource "snowflake_grant_privileges_to_account_role" "dbt_prod_database" {
-  privileges        = ["USAGE", "CREATE SCHEMA"]
+  privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.dbt_prod_role.name
   on_account_object {
     object_type = "DATABASE"
