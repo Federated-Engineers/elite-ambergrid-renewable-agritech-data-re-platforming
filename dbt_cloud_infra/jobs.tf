@@ -24,7 +24,7 @@ resource "dbtcloud_job" "production_job" {
   }
 }
 
-resource "dbtcloud_job" "slim_ci" {
+resource "dbtcloud_job" "slim_ci_job" {
   environment_id = dbtcloud_environment.slim_ci_environment.environment_id
   execute_steps = [
     "dbt build -s state:modified+ --fail-fast"
