@@ -1,4 +1,4 @@
-resource "dbtcloud_environment" "production" {
+resource "dbtcloud_environment" "production_environment" {
   dbt_version     = var.dbt_version
   name            = "Production"
   project_id      = dbtcloud_project.ambergrid_project.id
@@ -8,7 +8,7 @@ resource "dbtcloud_environment" "production" {
   connection_id   = dbtcloud_global_connection.snowflake_connection.id
 }
 
-resource "dbtcloud_environment" "slim_ci" {
+resource "dbtcloud_environment" "slim_ci_environment" {
   dbt_version     = var.dbt_version
   name            = "Slim CI"
   project_id      = dbtcloud_project.ambergrid_project.id
