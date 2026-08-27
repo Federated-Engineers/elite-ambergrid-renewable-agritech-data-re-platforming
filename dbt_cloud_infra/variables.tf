@@ -51,3 +51,39 @@ variable "dbt_version" {
   description = "dbt release track used by the deployment environments"
   default     = "fusion-stable"
 }
+
+variable "snowflake_dbt_cloud_user" {
+  type        = string
+  description = "Snowflake service user the scheduled production job authenticates as"
+  default     = "AMBERGRID_DBT_CLOUD_USR"
+}
+
+variable "snowflake_dbt_ci_user" {
+  type        = string
+  description = "Snowflake service user the Slim CI job authenticates as"
+  default     = "AMBERGRID_DBT_CI_USR"
+}
+
+variable "snowflake_ci_role" {
+  type        = string
+  description = "Snowflake role the CI job assumes; reads production, writes only to pull request schemas"
+  default     = "AMBERGRID_DBT_CI_ROLE"
+}
+
+variable "dbt_prod_schema" {
+  type        = string
+  description = "Fallback schema for production models that declare no custom schema"
+  default     = "SILVER"
+}
+
+variable "dbt_ci_schema" {
+  type        = string
+  description = "Placeholder schema for CI. dbt Cloud overrides this per pull request"
+  default     = "DBT_CLOUD_CI"
+}
+
+variable "dbt_threads" {
+  type        = number
+  description = "Threads used by the dbt Cloud jobs"
+  default     = 8
+}
