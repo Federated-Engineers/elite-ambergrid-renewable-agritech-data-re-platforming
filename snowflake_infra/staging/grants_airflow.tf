@@ -63,3 +63,21 @@ resource "snowflake_grant_privileges_to_account_role" "airflow_dev_bronze_future
     }
   }
 }
+
+resource "snowflake_grant_privileges_to_account_role" "airflow_dev_gsheet_stage" {
+  privileges        = ["READ", "WRITE"]
+  account_role_name = snowflake_account_role.airflow_dev_role.name
+  on_schema_object {
+    object_type = "STAGE"
+    object_name = snowflake_stage_internal.gsheet_lab_ledger_stage.fully_qualified_name
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "airflow_dev_gsheet_file_format" {
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_account_role.airflow_dev_role.name
+  on_schema_object {
+    object_type = "FILE FORMAT"
+    object_name = snowflake_file_format_json.gsheet_json_array_format.fully_qualified_name
+  }
+}
