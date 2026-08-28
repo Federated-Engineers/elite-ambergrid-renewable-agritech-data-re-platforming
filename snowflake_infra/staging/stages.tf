@@ -10,3 +10,14 @@ resource "snowflake_stage_external_s3" "scada_telemetry_stage" {
     format_name = snowflake_file_format_json.scada_telemetry_json_format.fully_qualified_name
   }
 }
+
+resource "snowflake_stage_internal" "gsheet_lab_ledger_stage" {
+  name     = "GSHEET_LAB_LEDGER_STAGE"
+  database = snowflake_database.ambergrid_dev_db.name
+  schema   = snowflake_schema.bronze.name
+  comment  = "Daily immutable snapshots of the AmberGrid Lab Ledger tabs"
+
+  file_format {
+    format_name = snowflake_file_format_json.gsheet_json_array_format.fully_qualified_name
+  }
+}
