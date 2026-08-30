@@ -16,6 +16,11 @@ resource "snowflake_stage_internal" "gsheet_lab_ledger_stage" {
   schema   = snowflake_schema.bronze.name
   comment  = "Daily immutable snapshots of the AmberGrid Lab Ledger tabs"
 
+  directory {
+    enable       = true
+    auto_refresh = true
+  }
+
   file_format {
     format_name = snowflake_file_format_json.gsheet_json_array_format.fully_qualified_name
   }
