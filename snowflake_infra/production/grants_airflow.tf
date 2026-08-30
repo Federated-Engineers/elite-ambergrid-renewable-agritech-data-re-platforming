@@ -43,7 +43,7 @@ resource "snowflake_grant_privileges_to_account_role" "airflow_prod_file_format"
 }
 
 resource "snowflake_grant_privileges_to_account_role" "airflow_prod_bronze_tables" {
-  privileges        = ["INSERT", "SELECT"]
+  privileges        = ["INSERT", "SELECT", "UPDATE"]
   account_role_name = snowflake_account_role.airflow_prod_role.name
   on_schema_object {
     all {
@@ -54,7 +54,7 @@ resource "snowflake_grant_privileges_to_account_role" "airflow_prod_bronze_table
 }
 
 resource "snowflake_grant_privileges_to_account_role" "airflow_prod_bronze_future_tables" {
-  privileges        = ["INSERT", "SELECT"]
+  privileges        = ["INSERT", "SELECT", "UPDATE"]
   account_role_name = snowflake_account_role.airflow_prod_role.name
   on_schema_object {
     future {
