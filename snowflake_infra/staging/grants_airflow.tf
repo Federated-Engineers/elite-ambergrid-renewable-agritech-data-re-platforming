@@ -99,3 +99,12 @@ resource "snowflake_grant_privileges_to_account_role" "airflow_dev_postgres_file
     object_name = snowflake_file_format_json.postgres_json_format.fully_qualified_name
   }
 }
+
+resource "snowflake_grant_ownership" "airflow_dev_scada_external_table" {
+  account_role_name   = snowflake_account_role.airflow_dev_role.name
+  outbound_privileges = "COPY"
+  on {
+    object_type = "EXTERNAL TABLE"
+    object_name = snowflake_external_table.scada_telemetry.fully_qualified_name
+  }
+}
