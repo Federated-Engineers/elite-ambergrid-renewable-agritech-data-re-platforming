@@ -6,6 +6,10 @@ resource "snowflake_stage_external_s3" "scada_telemetry_stage" {
   storage_integration = snowflake_storage_integration_aws.scada_telemetry_integration.name
   comment             = "Raw SCADA telemetry, partitioned by plant then reading date"
 
+  directory {
+    enable = true
+  }
+
   file_format {
     format_name = snowflake_file_format_json.scada_telemetry_json_format.fully_qualified_name
   }
