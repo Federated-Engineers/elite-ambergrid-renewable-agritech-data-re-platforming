@@ -147,6 +147,8 @@ models:
 
       - name: old_price_eur
         description: Price before the change, EUR.
+        tests:
+          - not_null
 
       - name: new_price_eur
         description: Price after the change, EUR.
@@ -155,6 +157,7 @@ models:
 
       - name: effective_date
         description: Date the new price takes effect.
+        tests:
           - not_null
 
       - name: _sheet_row_number

@@ -456,3 +456,75 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_day
+
+  - name: fact_biomass_transactions
+    description: >
+      The unified feedstock ledger. One row per source transaction, stacked
+      from four event types rather than joined, with source_system saying
+      which system each row came from. Includes transactions removed from the
+      source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: transaction_id
+        description: >
+          Identifier from the source record. Globally unique, since each event
+          type uses its own prefix.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the transaction happened at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: supplier_id
+        description: Supplier on the transaction. Only set on pickups.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_id
+
+      - name: transaction_timestamp
+        description: When the transaction happened.
+        tests:
+          - not_null
+
+      - name: source_system
+        description: System the row came from.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 'postgres_logistics'
+                  - 'google_sheets_lab'
+
+      - name: raw_weight_tons
+        description: Feedstock collected, tonnes. Only set on pickups.
+
+      - name: impurity_writeoff_tons
+        description: Material written off, tonnes. Only set on writeoffs.
+
+      - name: nitrogen_purity_pct
+        description: Nitrogen content, percent. Only set on lab batches.
+
+      - name: gross_payment_eur
+        description: >
+          Tonnage times the contracted price, EUR. Only set on pickups, and
+          null when no contract covers the pickup.
+
+      - name: green_subsidy_grant_eur
+        description: Subsidy awarded, EUR. Only set on grants.
+
+      - name: net_cost_eur
+        description: >
+          Cost impact of the transaction, EUR. Positive for pickups and
+          writeoffs, negative for grants, null for lab batches.
+
+      - name: is_current_in_source
+        description: False once the transaction is removed from the source system.
