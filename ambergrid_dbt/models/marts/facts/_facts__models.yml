@@ -528,3 +528,66 @@ models:
 
       - name: is_current_in_source
         description: False once the transaction is removed from the source system.
+
+  - name: fct_daily_facility_efficiency
+    description: >
+      One row per facility per day with activity, aggregating the biomass
+      ledger, telemetry and both revenue streams. Retracted records are
+      excluded here.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - facility_id
+              - date_day
+    columns:
+      - name: date_day
+        description: The day being reported.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: facility_id
+        description: Facility being reported.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: region_code
+        description: City the facility operates in.
+
+      - name: total_biomass_processed_tons
+        description: Feedstock collected that day, tonnes.
+
+      - name: avg_methane_purity_pct
+        description: Mean methane purity across the facility's bioreactors that day.
+
+      - name: total_net_cost_eur
+        description: >
+          Feedstock payments plus writeoff losses, less subsidies, EUR.
+          Subsidies enter the ledger as a credit.
+
+      - name: total_subsidy_revenue_eur
+        description: Subsidy grants awarded that day, EUR.
+
+      - name: total_gas_revenue_eur
+        description: Biomethane injection revenue that day, EUR.
+
+      - name: total_fertilizer_revenue_eur
+        description: >
+          Fertilizer invoiced that day, EUR. Billing date, not production
+          date, so this is lumpier than gas revenue.
+
+      - name: total_revenue_eur
+        description: Gas plus fertilizer revenue, EUR.
+
+      - name: net_profit_margin_percentage
+        description: >
+          Revenue less net cost, over revenue. Null on a day with no revenue,
+          since the ratio is undefined rather than zero.
