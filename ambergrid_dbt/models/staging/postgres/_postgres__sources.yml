@@ -1,0 +1,240 @@
+version: 2
+
+sources:
+  - name: postgres
+    description: >
+      AmberGrid operational Postgres, landed into bronze daily by Airflow.
+      Each table is merged on its business key, so bronze holds one row per
+      key. The merge never deletes.
+
+    database: "{{ target.database }}"
+    schema: bronze
+    loader: airflow
+    config:
+      tags:
+        - bronze
+        - postgres
+
+    tables:
+      - name: plants
+        identifier: pg_plants
+        description: One row per plant. Merged on plant_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: plant_id,
+              plant_name, plant_type, city, country, commissioned_date,
+              capacity_tons_per_day, num_bioreactors.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['plants']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: suppliers
+        identifier: pg_suppliers
+        description: One row per supplier. Merged on supplier_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: supplier_id,
+              company_name, supplier_type, contact_name, contact_email,
+              contact_phone, city, country.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['suppliers']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: supplier_contracts
+        identifier: pg_supplier_contracts
+        description: One row per supplier contract. Merged on contract_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: contract_id,
+              supplier_id, plant_id, waste_type, status, price_per_ton_eur,
+              contract_start_date, contract_end_date.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['supplier_contracts']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: fertilizer_sales_invoices
+        identifier: pg_fertilizer_sales_invoices
+        description: One row per sales invoice. Merged on invoice_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: invoice_id,
+              plant_id, customer_name, product_type, payment_status,
+              quantity_tons, unit_price_eur, total_amount_eur, invoice_date,
+              due_date.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['fertilizer_sales_invoices']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: fleet_logistics_logs
+        identifier: pg_fleet_logistics_logs
+        description: One row per feedstock pickup. Merged on pickup_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: pickup_id,
+              supplier_id, plant_id, waste_type, status, driver_name,
+              vehicle_plate, quantity_tons, distance_km, pickup_datetime.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['fleet_logistics_logs']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: gas_grid_injection_daily
+        identifier: pg_gas_grid_injection_daily
+        description: One row per plant per day of biomethane injection. Merged on record_id.
+        columns:
+          - name: raw_record
+            description: >
+              Source row as received, keyed by column name. Keys: record_id,
+              plant_id, injection_date, biomethane_volume_nm3,
+              injection_pressure_bar, revenue_eur.
+            tests:
+              - not_null
+
+          - name: source_table
+            description: "{{ doc('bronze_source_table') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['gas_grid_injection_daily']
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"

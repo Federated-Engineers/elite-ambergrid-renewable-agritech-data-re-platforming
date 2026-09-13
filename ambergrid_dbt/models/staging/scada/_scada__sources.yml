@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+  - name: scada
+    description: >
+      Hourly bioreactor telemetry, read in place from S3 by an external table.
+      Airflow only refreshes partition metadata.
+
+    database: "{{ target.database }}"
+    schema: bronze
+    loader: airflow
+    config:
+      tags:
+        - bronze
+        - scada
+
+    tables:
+      - name: telemetry
+        identifier: scada_telemetry
+        description: >
+          One row per bioreactor reading. Partitioned by plant_id and
+          reading_date, both parsed from the S3 path.
+        columns:
+          - name: raw_record
+            description: >
+              Reading as received. Alias of the external table VALUE
+              pseudocolumn. Keys: event_id, bioreactor_id, plant_id,
+              plant_name, firmware_version, sensor_status, timestamp, and the
+              nested sensor_readings object.
+            tests:
+              - not_null
+
+          - name: plant_id
+            description: Plant code parsed from the third segment of the S3 path.
+
+          - name: reading_date
+            description: Reading date parsed from the fourth segment of the S3 path.
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"

@@ -1,0 +1,227 @@
+version: 2
+
+models:
+  - name: stg_google_sheets__npk_lab_batches
+    description: >
+      One row per lab batch, cast from the all text raw_record VARIANT.
+      Includes batches removed from the source, flagged by
+      is_current_in_source.
+    columns:
+      - name: batch_id
+        description: Batch identifier, in the form NPK-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_id
+        description: Plant the sample was taken at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: batch_status
+        description: Approval state of the batch.
+
+      - name: technician_name
+        description: Technician who ran the sample.
+
+      - name: notes
+        description: Free text note. Blank cells arrive as an empty string.
+
+      - name: nitrogen_pct
+        description: Nitrogen content, percent.
+        tests:
+          - not_null
+
+      - name: phosphorus_pct
+        description: Phosphorus content, percent.
+        tests:
+          - not_null
+
+      - name: potassium_pct
+        description: Potassium content, percent.
+        tests:
+          - not_null
+
+      - name: sample_date
+        description: Date the sample was taken.
+        tests:
+          - not_null
+
+
+      - name: _sheet_row_number
+        description: "{{ doc('bronze_sheet_row_number') }}"
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_google_sheets__subsidy_grants
+    description: >
+      One row per subsidy grant, cast from the all text raw_record VARIANT.
+      Includes grants removed from the source, flagged by is_current_in_source.
+    columns:
+      - name: grant_id
+        description: Grant identifier, in the form GRT-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_id
+        description: Plant the grant was awarded for.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: subsidy_type
+        description: Grant scheme the award falls under.
+
+      - name: granting_authority
+        description: Body that awarded the grant.
+
+      - name: officer_name
+        description: Officer who handled the award.
+
+      - name: approval_status
+        description: Approval state of the grant.
+
+      - name: amount_eur
+        description: Amount awarded, EUR.
+        tests:
+          - not_null
+
+      - name: grant_date
+        description: Date the grant was awarded.
+        tests:
+          - not_null
+
+      - name: _sheet_row_number
+        description: "{{ doc('bronze_sheet_row_number') }}"
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_google_sheets__fertilizer_price_adjustments
+    description: >
+      One row per fertilizer price adjustment, cast from the all text
+      raw_record VARIANT. Includes adjustments removed from the source,
+      flagged by is_current_in_source.
+    columns:
+      - name: adjustment_id
+        description: Adjustment identifier, in the form PA-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: product_type
+        description: Fertilizer product the new price applies to.
+
+      - name: adjustment_reason
+        description: Stated reason for the price change.
+
+      - name: approved_by
+        description: Person who approved the change.
+
+      - name: old_price_eur
+        description: Price before the change, EUR.
+        tests:
+          - not_null
+
+      - name: new_price_eur
+        description: Price after the change, EUR.
+        tests:
+          - not_null
+
+      - name: effective_date
+        description: Date the new price takes effect.
+        tests:
+          - not_null
+
+      - name: _sheet_row_number
+        description: "{{ doc('bronze_sheet_row_number') }}"
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_google_sheets__impurity_writeoffs
+    description: >
+      One row per impurity writeoff, cast from the all text raw_record VARIANT.
+      Includes writeoffs removed from the source, flagged by
+      is_current_in_source.
+    columns:
+      - name: writeoff_id
+        description: Writeoff identifier, in the form WO-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_id
+        description: Plant the material was written off at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: contaminant_type
+        description: Contaminant found in the feedstock.
+
+      - name: inspector_name
+        description: Inspector who recorded the writeoff.
+
+      - name: quantity_tons_written_off
+        description: Material written off, tonnes.
+
+      - name: estimated_loss_eur
+        description: Estimated value of the loss, EUR.
+
+      - name: writeoff_date
+        description: Date the writeoff was recorded.
+
+      - name: _sheet_row_number
+        description: "{{ doc('bronze_sheet_row_number') }}"
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"

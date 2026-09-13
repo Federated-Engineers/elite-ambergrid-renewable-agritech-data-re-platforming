@@ -3,8 +3,14 @@ dialect = snowflake
 templater = jinja
 max_line_length = 120
 
+# ST06 orders select columns by syntax. We order them by meaning instead.
+exclude_rules = ST06
+
 [sqlfluff:templater:jinja]
 apply_dbt_builtins = true
+
+# Stubs for dbt_utils macros, which the jinja templater cannot resolve.
+library_path = sqlfluff_libs
 
 # Keywords and built-in functions written in lowercase
 [sqlfluff:rules:capitalisation.keywords]

@@ -1,0 +1,118 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      One row per calendar day from 2018-01-01 to 2031-12-31.
+    columns:
+      - name: date_day
+        description: The calendar day. Primary key.
+        tests:
+          - unique
+          - not_null
+
+      - name: year_number
+        description: Calendar year.
+
+      - name: quarter_number
+        description: Calendar quarter, 1 to 4.
+
+      - name: month_number
+        description: Calendar month, 1 to 12.
+
+      - name: month_name
+        description: Full month name.
+
+      - name: day_of_month
+        description: Day within the month.
+
+      - name: day_name
+        description: Three letter day name.
+
+      - name: week_of_year
+        description: ISO week number.
+
+      - name: month_start_date
+        description: First day of the month.
+
+      - name: month_end_date
+        description: Last day of the month.
+
+      - name: quarter_start_date
+        description: First day of the quarter.
+
+      - name: year_start_date
+        description: First day of the year.
+
+      - name: is_weekend
+        description: True for Saturday and Sunday.
+
+  - name: dim_facilities
+    description: >
+      One row per production facility. Includes facilities removed from the
+      source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: facility_id
+        description: Facility identifier, in the form PLANT-001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_name
+        description: Site name. Not unique, do not join on it.
+
+      - name: region_code
+        description: City the facility operates in.
+
+      - name: country
+        description: Country the facility operates in.
+
+      - name: bioreactor_type
+        description: Processing technology at the site.
+
+      - name: max_capacity_metric_tons
+        description: Rated processing capacity, tonnes per day.
+
+      - name: num_bioreactors
+        description: Bioreactors installed at the facility.
+
+      - name: commissioning_date
+        description: Date the facility entered service.
+
+      - name: is_current_in_source
+        description: False once the facility is removed from the source system.
+
+  - name: dim_suppliers
+    description: >
+      One row per commercial agricultural supplier. Includes suppliers removed
+      from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: supplier_id
+        description: Supplier identifier, in the form SUP-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_name
+        description: Registered company name.
+
+      - name: supplier_type
+        description: Type of supplier business.
+
+      - name: contact_name
+        description: Named contact at the supplier.
+
+      - name: contact_email
+        description: Contact email address.
+
+      - name: contact_phone
+        description: Contact phone. 
+
+      - name: city
+        description: City the supplier operates in.
+
+      - name: country
+        description: Country the supplier operates in.
+
+      - name: is_current_in_source
+        description: False once the supplier is removed from the source system.

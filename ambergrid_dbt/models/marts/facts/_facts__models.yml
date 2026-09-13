@@ -1,0 +1,593 @@
+version: 2
+
+models:
+  - name: fct_gas_grid_injection_daily
+    description: >
+      One row per plant per day of biomethane injection into the grid.
+      Includes records removed from the source, filter on is_current_in_source
+      to exclude them.
+    columns:
+      - name: record_id
+        description: Injection record identifier, in the form GGI-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility that injected the gas.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: injection_date
+        description: Day the gas was injected into the grid.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: biomethane_volume_nm3
+        description: Biomethane injected, normal cubic metres.
+
+      - name: injection_pressure_bar
+        description: Injection pressure, bar.
+
+      - name: revenue_eur
+        description: Revenue earned on the injection, EUR.
+
+      - name: is_current_in_source
+        description: False once the record is removed from the source system.
+
+  - name: fct_fertilizer_sales_invoice
+    description: >
+      One row per fertilizer sales invoice. Includes invoices removed from the
+      source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: invoice_id
+        description: Invoice identifier, in the form INV-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility that produced the goods invoiced.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: customer_name
+        description: Customer as free text.
+
+      - name: product_type
+        description: Fertilizer product sold.
+
+      - name: payment_status
+        description: Payment state of the invoice.
+
+      - name: quantity_tons
+        description: Quantity invoiced, tonnes.
+
+      - name: unit_price_eur
+        description: Price per tonne, EUR.
+
+      - name: total_amount_eur
+        description: Invoice total, EUR. Equals quantity_tons times unit_price_eur.
+
+      - name: invoice_date
+        description: Date the invoice was raised.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: due_date
+        description: Date payment falls due.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the invoice is removed from the source system.
+
+  - name: fct_feedstock_pickup
+    description: >
+      One row per feedstock pickup from a supplier. Includes pickups removed
+      from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: pickup_id
+        description: Pickup identifier, in the form PU-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: Supplier the feedstock was collected from.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_id
+
+      - name: facility_id
+        description: Facility the feedstock was delivered to.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: waste_type
+        description: Feedstock collected.
+
+      - name: pickup_status
+        description: State of the pickup in the source.
+
+      - name: driver_name
+        description: Driver on the run.
+
+      - name: vehicle_plate
+        description: Registration plate of the vehicle.
+
+      - name: quantity_tons
+        description: Feedstock collected, tonnes.
+
+      - name: distance_km
+        description: Distance driven on the run, kilometres.
+
+      - name: pickup_datetime
+        description: When the pickup happened. Stored with its UTC offset.
+
+      - name: pickup_date
+        description: Date of the pickup, derived from pickup_datetime.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the pickup is removed from the source system.
+
+  - name: fct_supplier_contract
+    description: >
+      One row per supply contract between a supplier and a plant. Includes
+      contracts removed from the source, filter on is_current_in_source to
+      exclude them.
+    columns:
+      - name: contract_id
+        description: Contract identifier, in the form CTR-00001.
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: Supplier the waste is bought from.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_id
+
+      - name: facility_id
+        description: Facility the waste is delivered to.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: waste_type
+        description: Feedstock covered by the contract.
+
+      - name: contract_status
+        description: >
+          Contract status in the source.
+
+      - name: price_per_ton_eur
+        description: Agreed price per tonne of feedstock, EUR.
+
+      - name: contract_start_date
+        description: Date the contract starts.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: contract_end_date
+        description: Date the contract ends.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the contract is removed from the source system.
+
+  - name: fct_npk_lab_batch
+    description: >
+      One row per NPK lab batch sampled at a plant. Includes batches removed
+      from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: batch_id
+        description: Batch identifier, in the form NPK-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the sample was taken at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: batch_status
+        description: Approval state of the batch.
+
+      - name: technician_name
+        description: Technician who ran the sample.
+
+      - name: notes
+        description: Free text note. Blank cells arrive as an empty string.
+
+      - name: nitrogen_pct
+        description: Nitrogen content, percent.
+
+      - name: phosphorus_pct
+        description: Phosphorus content, percent.
+
+      - name: potassium_pct
+        description: Potassium content, percent.
+
+      - name: sample_date
+        description: Date the sample was taken.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the batch is removed from the source system.
+
+  - name: fct_subsidy_grant
+    description: >
+      One row per subsidy grant awarded for a plant. Includes grants removed
+      from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: grant_id
+        description: Grant identifier, in the form GRT-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the grant was awarded for.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: subsidy_type
+        description: Grant scheme the award falls under.
+
+      - name: granting_authority
+        description: Body that awarded the grant.
+
+      - name: officer_name
+        description: Officer who handled the award.
+
+      - name: approval_status
+        description: Approval state of the grant.
+
+      - name: amount_eur
+        description: Amount awarded, EUR.
+
+      - name: grant_date
+        description: Date the grant was awarded.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the grant is removed from the source system.
+
+  - name: fct_impurity_writeoff
+    description: >
+      One row per impurity writeoff recorded at a plant. Includes writeoffs
+      removed from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: writeoff_id
+        description: Writeoff identifier, in the form WO-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the material was written off at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: contaminant_type
+        description: Contaminant found in the feedstock.
+
+      - name: inspector_name
+        description: Inspector who recorded the writeoff.
+
+      - name: quantity_tons_written_off
+        description: Material written off, tonnes.
+
+      - name: estimated_loss_eur
+        description: Estimated value of the loss, EUR.
+
+      - name: writeoff_date
+        description: Date the writeoff was recorded.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the writeoff is removed from the source system.
+
+  - name: fct_fertilizer_price_adjustment
+    description: >
+      One row per fertilizer price adjustment. Includes adjustments removed
+      from the source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: adjustment_id
+        description: Adjustment identifier, in the form PA-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: product_type
+        description: >
+          Fertilizer product the new price applies to.
+
+      - name: adjustment_reason
+        description: Stated reason for the price change.
+
+      - name: approved_by
+        description: Person who approved the change.
+
+      - name: old_price_eur
+        description: Price before the change, EUR.
+
+      - name: new_price_eur
+        description: Price after the change, EUR.
+
+      - name: effective_date
+        description: Date the new price takes effect.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: is_current_in_source
+        description: False once the adjustment is removed from the source system.
+
+  - name: fact_scada_reactor_telemetry
+    description: >
+      One row per bioreactor reading. No is_current_in_source flag, the
+      external table drops rows when their S3 file is removed.
+    columns:
+      - name: telemetry_id
+        description: Reading identifier, a UUID generated by the device.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the reading came from, taken from the S3 path.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: bioreactor_unit
+        description: Bioreactor within the facility, in the form BIOR-001-01.
+        tests:
+          - not_null
+
+      - name: firmware_version
+        description: Firmware running on the device at the time of the reading.
+
+      - name: sensor_status
+        description: Device reported health. Readings may be null when this is not OK.
+
+      - name: methane_percentage
+        description: Methane purity of the biogas, percent.
+
+      - name: temperature_celsius
+        description: Digestate temperature, degrees celsius.
+
+      - name: pressure_bar
+        description: Vessel pressure, bar.
+
+      - name: ambient_gas_leak_ppm
+        description: Ambient gas detected near the vessel, parts per million.
+
+      - name: is_leak_alarm_active
+        description: Whether the device raised a gas leak alarm.
+
+      - name: reading_timestamp
+        description: When the reading was taken. Stored with its UTC offset.
+        tests:
+          - not_null
+
+      - name: reading_date
+        description: Reading date taken from the S3 path.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+  - name: fact_biomass_transactions
+    description: >
+      The unified feedstock ledger. One row per source transaction, stacked
+      from four event types rather than joined, with source_system saying
+      which system each row came from. Includes transactions removed from the
+      source, filter on is_current_in_source to exclude them.
+    columns:
+      - name: transaction_id
+        description: >
+          Identifier from the source record. Globally unique, since each event
+          type uses its own prefix.
+        tests:
+          - unique
+          - not_null
+
+      - name: facility_id
+        description: Facility the transaction happened at.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: supplier_id
+        description: Supplier on the transaction. Only set on pickups.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_id
+
+      - name: transaction_timestamp
+        description: When the transaction happened.
+        tests:
+          - not_null
+
+      - name: source_system
+        description: System the row came from.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 'postgres_logistics'
+                  - 'google_sheets_lab'
+
+      - name: raw_weight_tons
+        description: Feedstock collected, tonnes. Only set on pickups.
+
+      - name: impurity_writeoff_tons
+        description: Material written off, tonnes. Only set on writeoffs.
+
+      - name: nitrogen_purity_pct
+        description: Nitrogen content, percent. Only set on lab batches.
+
+      - name: gross_payment_eur
+        description: >
+          Tonnage times the contracted price, EUR. Only set on pickups, and
+          null when no contract covers the pickup.
+
+      - name: green_subsidy_grant_eur
+        description: Subsidy awarded, EUR. Only set on grants.
+
+      - name: net_cost_eur
+        description: >
+          Cost impact of the transaction, EUR. Positive for pickups and
+          writeoffs, negative for grants, null for lab batches.
+
+      - name: is_current_in_source
+        description: False once the transaction is removed from the source system.
+
+  - name: fct_daily_facility_efficiency
+    description: >
+      One row per facility per day with activity, aggregating the biomass
+      ledger, telemetry and both revenue streams. Retracted records are
+      excluded here.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - facility_id
+              - date_day
+    columns:
+      - name: date_day
+        description: The day being reported.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: facility_id
+        description: Facility being reported.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_facilities')
+                field: facility_id
+
+      - name: region_code
+        description: City the facility operates in.
+
+      - name: total_biomass_processed_tons
+        description: Feedstock collected that day, tonnes.
+
+      - name: avg_methane_purity_pct
+        description: Mean methane purity across the facility's bioreactors that day.
+
+      - name: total_net_cost_eur
+        description: >
+          Feedstock payments plus writeoff losses, less subsidies, EUR.
+          Subsidies enter the ledger as a credit.
+
+      - name: total_subsidy_revenue_eur
+        description: Subsidy grants awarded that day, EUR.
+
+      - name: total_gas_revenue_eur
+        description: Biomethane injection revenue that day, EUR.
+
+      - name: total_fertilizer_revenue_eur
+        description: >
+          Fertilizer invoiced that day, EUR. Billing date, not production
+          date, so this is lumpier than gas revenue.
+
+      - name: total_revenue_eur
+        description: Gas plus fertilizer revenue, EUR.
+
+      - name: net_profit_margin_percentage
+        description: >
+          Revenue less net cost, over revenue. Null on a day with no revenue,
+          since the ratio is undefined rather than zero.

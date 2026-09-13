@@ -1,0 +1,313 @@
+version: 2
+
+models:
+  - name: stg_postgres__plants
+    description: >
+      One row per plant, typed from the raw_record VARIANT. Includes plants
+      removed from the source, flagged by is_current_in_source.
+    columns:
+      - name: plant_id
+        description: Plant identifier, in the form PLANT-001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_name
+        description: Site name. Not unique, do not join on it.
+
+      - name: plant_type
+        description: Type of facility at the site.
+
+      - name: city
+        description: City the plant operates in.
+
+      - name: country
+        description: Country the plant operates in.
+
+      - name: capacity_tons_per_day
+        description: Rated processing capacity, tonnes per day.
+
+      - name: num_bioreactors
+        description: Bioreactors installed at the plant.
+
+      - name: commissioned_date
+        description: Date the plant entered service.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_postgres__suppliers
+    description: >
+      One row per supplier, typed from the raw_record VARIANT. Includes
+      suppliers removed from the source, flagged by is_current_in_source.
+    columns:
+      - name: supplier_id
+        description: Supplier identifier, in the form SUP-0001.
+        tests:
+          - unique
+          - not_null
+
+      - name: company_name
+        description: Registered company name.
+
+      - name: supplier_type
+        description: Type of supplier business.
+
+      - name: contact_name
+        description: Named contact at the supplier.
+
+      - name: contact_email
+        description: Contact email address.
+
+      - name: contact_phone
+        description: Contact phone. Format is not standardised in the source.
+
+      - name: city
+        description: City the supplier operates in.
+
+      - name: country
+        description: Country the supplier operates in.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_postgres__supplier_contracts
+    description: >
+      One row per supplier contract, typed from the raw_record VARIANT.
+      Includes contracts removed from the source, flagged by
+      is_current_in_source.
+    columns:
+      - name: contract_id
+        description: Contract identifier, in the form CTR-00001.
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: Supplier the waste is bought from.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__suppliers')
+                field: supplier_id
+
+      - name: plant_id
+        description: Plant the waste is delivered to.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: waste_type
+        description: Feedstock covered by the contract.
+
+      - name: contract_status
+        description: Contract status in the source. Does not always agree with the dates.
+
+      - name: price_per_ton_eur
+        description: Agreed price per tonne of feedstock, EUR.
+
+      - name: contract_start_date
+        description: Date the contract starts.
+
+      - name: contract_end_date
+        description: Date the contract ends.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_postgres__fertilizer_sales_invoices
+    description: >
+      One row per sales invoice, typed from the raw_record VARIANT. Includes
+      invoices removed from the source, flagged by is_current_in_source.
+    columns:
+      - name: invoice_id
+        description: Invoice identifier, in the form INV-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_id
+        description: Plant that produced the goods invoiced.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: customer_name
+        description: Customer as free text. The source holds no customer id.
+
+      - name: product_type
+        description: Fertilizer product sold.
+
+      - name: payment_status
+        description: Payment state of the invoice in the source.
+
+      - name: quantity_tons
+        description: Quantity invoiced, tonnes.
+
+      - name: unit_price_eur
+        description: Price per tonne, EUR.
+
+      - name: total_amount_eur
+        description: Invoice total, EUR. Equals quantity_tons times unit_price_eur.
+
+      - name: invoice_date
+        description: Date the invoice was raised.
+
+      - name: due_date
+        description: Date payment falls due.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_postgres__fleet_logistics_logs
+    description: >
+      One row per feedstock pickup, typed from the raw_record VARIANT.
+      Includes pickups removed from the source, flagged by
+      is_current_in_source.
+    columns:
+      - name: pickup_id
+        description: Pickup identifier, in the form PU-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: supplier_id
+        description: Supplier the feedstock was collected from.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__suppliers')
+                field: supplier_id
+
+      - name: plant_id
+        description: Plant the feedstock was delivered to.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: waste_type
+        description: Feedstock collected.
+
+      - name: pickup_status
+        description: State of the pickup in the source.
+
+      - name: driver_name
+        description: Driver on the run.
+
+      - name: vehicle_plate
+        description: Registration plate of the vehicle.
+
+      - name: quantity_tons
+        description: Feedstock collected, tonnes.
+
+      - name: distance_km
+        description: Distance driven on the run, kilometres.
+
+      - name: pickup_datetime
+        description: When the pickup happened. Stored with its UTC offset.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"
+
+  - name: stg_postgres__gas_grid_injection_daily
+    description: >
+      One row per plant per day of biomethane injection, typed from the
+      raw_record VARIANT. Includes records removed from the source, flagged by
+      is_current_in_source.
+    columns:
+      - name: record_id
+        description: Injection record identifier, in the form GGI-000001.
+        tests:
+          - unique
+          - not_null
+
+      - name: plant_id
+        description: Plant that injected the gas.
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postgres__plants')
+                field: plant_id
+
+      - name: injection_date
+        description: Day the gas was injected into the grid.
+        tests:
+          - not_null
+
+      - name: biomethane_volume_nm3
+        description: Biomethane injected, normal cubic metres.
+
+      - name: injection_pressure_bar
+        description: Injection pressure, bar.
+
+      - name: revenue_eur
+        description: Revenue earned on the injection, EUR.
+
+      - name: last_snapshot_date
+        description: "{{ doc('stg_last_snapshot_date') }}"
+
+      - name: is_current_in_source
+        description: "{{ doc('stg_is_current_in_source') }}"
+
+      - name: _source_file_name
+        description: "{{ doc('stg_source_file_name') }}"
+
+      - name: _last_modified_at
+        description: "{{ doc('stg_last_modified_at') }}"

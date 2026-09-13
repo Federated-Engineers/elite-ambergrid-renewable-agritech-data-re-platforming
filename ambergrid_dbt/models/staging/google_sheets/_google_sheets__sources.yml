@@ -1,0 +1,177 @@
+version: 2
+
+sources:
+  - name: google_sheets
+    description: >
+      AmberGrid lab ledger workbook, landed into bronze daily by Airflow.
+      Every cell arrives as text, and blank cells as empty strings.
+      Each worksheet is merged on its business key. The merge never deletes.
+
+    database: "{{ target.database }}"
+    schema: bronze
+    loader: airflow
+    config:
+      tags:
+        - bronze
+        - google_sheets
+
+    tables:
+      - name: npk_lab_batches
+        identifier: gsheet_npk_lab_batches
+        description: One row per lab batch. Merged on batch_id.
+        columns:
+          - name: raw_record
+            description: >
+              Sheet row as received, keyed by header. Keys: batch_id, plant_id,
+              batch_status, nitrogen_pct, phosphorus_pct, potassium_pct,
+              sample_date, technician_name, notes.
+            tests:
+              - not_null
+
+          - name: worksheet_name
+            description: "{{ doc('bronze_worksheet_name') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['NPK_Lab_Batches']
+
+          - name: sheet_row_number
+            description: "{{ doc('bronze_sheet_row_number') }}"
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: subsidy_grants
+        identifier: gsheet_subsidy_grants
+        description: One row per subsidy grant. Merged on grant_id.
+        columns:
+          - name: raw_record
+            description: >
+              Sheet row as received, keyed by header. Keys: grant_id, plant_id,
+              subsidy_type, granting_authority, officer_name, approval_status,
+              amount_eur, grant_date.
+            tests:
+              - not_null
+
+          - name: worksheet_name
+            description: "{{ doc('bronze_worksheet_name') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['Subsidy_Grants']
+
+          - name: sheet_row_number
+            description: "{{ doc('bronze_sheet_row_number') }}"
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: fertilizer_price_adjustments
+        identifier: gsheet_fertilizer_price_adjustments
+        description: One row per price adjustment. Merged on adjustment_id.
+        columns:
+          - name: raw_record
+            description: >
+              Sheet row as received, keyed by header. Keys: adjustment_id,
+              product_type, adjustment_reason, approved_by, old_price_eur,
+              new_price_eur, effective_date.
+            tests:
+              - not_null
+
+          - name: worksheet_name
+            description: "{{ doc('bronze_worksheet_name') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['Fertilizer_Price_Adjustments']
+
+          - name: sheet_row_number
+            description: "{{ doc('bronze_sheet_row_number') }}"
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
+
+      - name: impurity_writeoffs
+        identifier: gsheet_impurity_writeoffs
+        description: One row per impurity writeoff. Merged on writeoff_id.
+        columns:
+          - name: raw_record
+            description: >
+              Sheet row as received, keyed by header. Keys: writeoff_id,
+              plant_id, contaminant_type, inspector_name,
+              quantity_tons_written_off, estimated_loss_eur, writeoff_date.
+            tests:
+              - not_null
+
+          - name: worksheet_name
+            description: "{{ doc('bronze_worksheet_name') }}"
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['Impurity_WriteOffs']
+
+          - name: sheet_row_number
+            description: "{{ doc('bronze_sheet_row_number') }}"
+
+          - name: snapshot_date
+            description: "{{ doc('bronze_snapshot_date') }}"
+
+          - name: source_file_name
+            description: "{{ doc('bronze_source_file_name') }}"
+
+          - name: file_row_number
+            description: "{{ doc('bronze_file_row_number') }}"
+
+          - name: file_last_modified
+            description: "{{ doc('bronze_file_last_modified') }}"
+
+          - name: file_content_key
+            description: "{{ doc('bronze_file_content_key') }}"
+
+          - name: loaded_at
+            description: "{{ doc('bronze_loaded_at') }}"
