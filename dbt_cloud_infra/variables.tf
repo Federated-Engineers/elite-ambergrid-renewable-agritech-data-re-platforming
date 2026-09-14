@@ -43,13 +43,13 @@ variable "snowflake_prod_warehouse" {
 variable "snowflake_prod_role" {
   type        = string
   description = "Snowflake role the production jobs assume"
-  default     = "AMBERGRID_DBT_CLOUD_ROLE"
+  default     = "AMBERGRID_DBT_PROD_ROLE"
 }
 
 variable "dbt_version" {
   type        = string
   description = "dbt release track used by the deployment environments"
-  default     = "fusion-stable"
+  default     = "latest"
 }
 
 variable "snowflake_dbt_cloud_user" {
